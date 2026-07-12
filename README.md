@@ -39,21 +39,9 @@ Rows are colored by category: green is data exclusively owned by that path, yell
 
 `m` switches to a physical layout view — one row per device, showing where on the actual disk the sampled data lives, not just which file it belongs to. Useful for understanding RAID/multi-device layouts or just seeing whether your data is fragmented across the device. Density shading (light to solid) reflects how many samples have landed in that region so far; it fills in the longer you leave it running.
 
-## How subvolume resolution works
-
-This is the part that's easy to get subtly wrong. `LOGICAL_INO` gives you back a subvolume ID and an inode number, but `INO_PATHS` needs a file descriptor that's actually inside that subvolume to resolve the inode correctly — inode numbers are only unique within a subvolume, not filesystem-wide. On a flat layout (`@`, `@home`, `@snapshots` as sibling subvolumes each mounted separately, which is the common Arch/openSUSE setup), the tool scans `/proc/self/mountinfo` at startup to find where each subvolume of *this* filesystem is actually mounted, rather than guessing based on path joining. Subvolumes that aren't separately mounted anywhere fall back to a best-effort path join, and if that also fails, they show up as `<unresolved-subvol:N>` — a single bucket, not a per-file breakdown, because resolving inodes against the wrong subvolume's tree silently returns wrong (not missing) data, which is worse than not showing a path at all.
-
 ## Known limitations
 
 - Physical disk map only shows one stripe copy for RAID1/DUP profiles, not every replica.
 - No `--compare` baseline diffing yet (compare two runs over time to see what grew).
 - Category model is exclusive/shared/metadata/system/unallocated — no separate "distributed" size (fair-share attribution across every subvolume that references a block) yet.
 - Confidence numbers in the header are a rough 1/√n approximation, not a proper Wilson score interval.
-
-## Architecture, briefly
-
-Three pieces, deliberately decoupled so a slow ioctl or a big tree never stalls rendering:
-
-- A pool of sampler threads, each picking a random address weighted by block-group size and resolving it independently.
-- One aggregator thread that owns the actual path tree and physical map, fed by a channel from the samplers.
-- The UI thread, which only ever takes a short lock to read whatever's currently on screen — never the whole tree.
