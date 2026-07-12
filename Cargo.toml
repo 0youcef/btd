@@ -1,0 +1,16 @@
+[package]
+name = "btd"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+btrfs-uapi = "0.13"
+crossbeam-channel = "0.5"
+ratatui = "0.29"
+crossterm = "0.28"
+rand = "0.8"
+anyhow = "1"
+uuid = "1"
+
+[profile.release]
+lto = true
