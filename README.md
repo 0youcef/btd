@@ -1,3 +1,4 @@
+![Demo](demo.gif)
 # btd
 
 A statistical disk usage analyzer for btrfs, inspired by [btdu](https://github.com/CyberShadow/btdu). Instead of walking every extent, it samples random addresses across the filesystem's allocated space and resolves each one back to a path via `LOGICAL_INO`/`INO_PATHS`. Given enough samples this converges to accurate size estimates without the I/O cost of a full scan, and you get usable numbers within seconds instead of waiting for a complete walk.
