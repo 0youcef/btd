@@ -1,4 +1,4 @@
-![Demo](demo.gif)
+![Demo](./demo.gif)
 # btd
 
 A statistical disk usage analyzer for btrfs, inspired by [btdu](https://github.com/CyberShadow/btdu). Instead of walking every extent, it samples random addresses across the filesystem's allocated space and resolves each one back to a path via `LOGICAL_INO`/`INO_PATHS`. Given enough samples this converges to accurate size estimates without the I/O cost of a full scan, and you get usable numbers within seconds instead of waiting for a complete walk.
@@ -7,6 +7,32 @@ A statistical disk usage analyzer for btrfs, inspired by [btdu](https://github.c
 
 `btrfs filesystem du` and friends do exhaustive backref walks. That's accurate but slow on large or heavily-snapshotted filesystems. Sampling trades a small amount of precision for something you can actually run interactively on a multi-terabyte volume with thousands of snapshots.
 
+## Installation
+
+### Arch Linux (AUR)
+`btd` is available in the Arch User Repository (AUR). You can install it using your favorite AUR helper:
+
+```bash
+yay -S btd
+
+```
+or
+
+```bash
+paru -S btd
+```
+
+### Other Linux Distributions
+
+An installation script is provided to automatically build and install the binary to /usr/local/bin (requires a Rust toolchain):
+Bash
+
+```bash
+git clone https://github.com/0youcef/btd.git
+cd btd
+chmod +x install.sh
+./install.sh
+```
 ## Building
 
 ```
